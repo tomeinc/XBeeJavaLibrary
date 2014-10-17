@@ -14,6 +14,7 @@ package com.digi.xbee.api;
 import com.digi.xbee.api.connection.IConnectionInterface;
 import com.digi.xbee.api.connection.serial.SerialPortParameters;
 import com.digi.xbee.api.connection.serial.SerialPortRxTx;
+import com.digi.xbee.api.connection.serial.SerialPortRxTxAndroid;
 
 public class XBee {
 	
@@ -30,7 +31,11 @@ public class XBee {
 	 * @see IConnectionInterface
 	 */
 	public static IConnectionInterface createConnectiontionInterface(String port, int baudRate) {
-		IConnectionInterface connectionInterface = new SerialPortRxTx(port, baudRate);
+		IConnectionInterface connectionInterface;
+		if (isAndroid())
+			connectionInterface = new SerialPortRxTxAndroid(port, baudRate);
+		else
+			connectionInterface = new SerialPortRxTx(port, baudRate);
 		return connectionInterface;
 	}
 	
@@ -49,7 +54,23 @@ public class XBee {
 	 * @see IConnectionInterface
 	 */
 	public static IConnectionInterface createConnectiontionInterface(String port, SerialPortParameters serialPortParameters) {
-		IConnectionInterface connectionInterface = new SerialPortRxTx(port, serialPortParameters);
+		IConnectionInterface connectionInterface;
+		if (isAndroid())
+			connectionInterface = new SerialPortRxTxAndroid(port, serialPortParameters);
+		else
+			connectionInterface = new SerialPortRxTx(port, serialPortParameters);
 		return connectionInterface;
+	}
+	
+	/**
+	 * Retrieves whether the API is running in Android or not.
+	 * 
+	 * @return {@code true} if the API is running in an Android system, {@code false} otherwise.
+	 */
+	private static boolean isAndroid() {
+		String property = System.getProperty("java.runtime.name");
+		if (property.equalsIgnoreCase("Android Runtime"))
+			return true;
+		return false;
 	}
 }
