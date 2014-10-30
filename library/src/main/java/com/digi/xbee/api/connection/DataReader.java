@@ -25,10 +25,13 @@ import com.digi.xbee.api.RemoteXBeeDevice;
 import com.digi.xbee.api.XBeeDevice;
 import com.digi.xbee.api.XBeeNetwork;
 import com.digi.xbee.api.exceptions.InvalidPacketException;
+import com.digi.xbee.api.exceptions.XBeeException;
 import com.digi.xbee.api.io.IOSample;
 import com.digi.xbee.api.listeners.IIOSampleReceiveListener;
+import com.digi.xbee.api.listeners.IModemStatusReceiveListener;
 import com.digi.xbee.api.listeners.IPacketReceiveListener;
-import com.digi.xbee.api.listeners.ISerialDataReceiveListener;
+import com.digi.xbee.api.listeners.IDataReceiveListener;
+import com.digi.xbee.api.models.ModemStatusEvent;
 import com.digi.xbee.api.models.SpecialByte;
 import com.digi.xbee.api.models.OperatingMode;
 import com.digi.xbee.api.models.XBeeMessage;
@@ -38,6 +41,7 @@ import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.XBeePacketParser;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
+import com.digi.xbee.api.packet.common.ModemStatusPacket;
 import com.digi.xbee.api.packet.common.ReceivePacket;
 import com.digi.xbee.api.packet.raw.RX16IOPacket;
 import com.digi.xbee.api.packet.raw.RX16Packet;
@@ -65,11 +69,12 @@ public class DataReader extends Thread {
 	
 	private volatile OperatingMode mode;
 	
-	private ArrayList<ISerialDataReceiveListener> serialDataReceiveListeners = new ArrayList<ISerialDataReceiveListener>();
+	private ArrayList<IDataReceiveListener> dataReceiveListeners = new ArrayList<IDataReceiveListener>();
 	// The packetReceiveListeners requires to be a HashMap with an associated integer. The integer is used to determine 
 	// the frame ID of the packet that should be received. When it is 99999 (ALL_FRAME_IDS), all the packets will be handled.
 	private HashMap<IPacketReceiveListener, Integer> packetReceiveListeners = new HashMap<IPacketReceiveListener, Integer>();
 	private ArrayList<IIOSampleReceiveListener> ioSampleReceiveListeners = new ArrayList<IIOSampleReceiveListener>();
+	private ArrayList<IModemStatusReceiveListener> modemStatusListeners = new ArrayList<IModemStatusReceiveListener>();
 	
 	private Logger logger;
 	
@@ -85,7 +90,7 @@ public class DataReader extends Thread {
 	 * 
 	 * @param connectionInterface Connection interface to read from.
 	 * @param mode XBee operating mode.
-	 * @param XBeeDevice Reference to the XBee device containing this DataReader object.
+	 * @param xbeeDevice Reference to the XBee device containing this DataReader object.
 	 * 
 	 * @throws NullPointerException if {@code connectionInterface == null} or
 	 *                                 {@code mode == null}.
@@ -119,38 +124,38 @@ public class DataReader extends Thread {
 	}
 	
 	/**
-	 * Adds the given serial data receive listener to the list of listeners to 
-	 * be notified when serial data is received.
+	 * Adds the given data receive listener to the list of listeners to be 
+	 * notified when data is received.
 	 * 
 	 * <p>If the listener has been already included this method does nothing.</p>
 	 * 
-	 * @param listener Listener to be notified when new serial data is received.
+	 * @param listener Listener to be notified when new data is received.
 	 * 
-	 * @see ISerialDataReceiveListener
-	 * @see #removeSerialDataReceiveListener(ISerialDataReceiveListener)
+	 * @see IDataReceiveListener
+	 * @see #removeDataReceiveListener(IDataReceiveListener)
 	 */
-	public void addSerialDatatReceiveListener(ISerialDataReceiveListener listener) {
-		synchronized (serialDataReceiveListeners) {
-			if (!serialDataReceiveListeners.contains(listener))
-				serialDataReceiveListeners.add(listener);
+	public void addDataReceiveListener(IDataReceiveListener listener) {
+		synchronized (dataReceiveListeners) {
+			if (!dataReceiveListeners.contains(listener))
+				dataReceiveListeners.add(listener);
 		}
 	}
 	
 	/**
-	 * Removes the given serial data receive listener from the list of serial 
-	 * data receive listeners.
+	 * Removes the given data receive listener from the list of data receive 
+	 * listeners.
 	 * 
 	 * <p>If the listener is not included in the list, this method does nothing.</p>
 	 * 
-	 * @param listener Serial data receive listener to remove.
+	 * @param listener Data receive listener to remove.
 	 * 
-	 * @see ISerialDataReceiveListener
-	 * @see #addSerialDatatReceiveListener(ISerialDataReceiveListener)
+	 * @see IDataReceiveListener
+	 * @see #addDataReceiveListener(IDataReceiveListener)
 	 */
-	public void removeSerialDataReceiveListener(ISerialDataReceiveListener listener) {
-		synchronized (serialDataReceiveListeners) {
-			if (serialDataReceiveListeners.contains(listener))
-				serialDataReceiveListeners.remove(listener);
+	public void removeDataReceiveListener(IDataReceiveListener listener) {
+		synchronized (dataReceiveListeners) {
+			if (dataReceiveListeners.contains(listener))
+				dataReceiveListeners.remove(listener);
 		}
 	}
 	
@@ -249,6 +254,42 @@ public class DataReader extends Thread {
 		}
 	}
 	
+	/**
+	 * Adds the given Modem Status receive listener to the list of listeners to 
+	 * be notified when a modem status event is received.
+	 * 
+	 * <p>If the listener has been already included this method does nothing.</p>
+	 * 
+	 * @param listener Listener to be notified when new modem status events are received.
+	 * 
+	 * @see IModemStatusReceiveListener
+	 * @see #removeModemStatusReceiveListener(IModemStatusReceiveListener)
+	 */
+	public void addModemStatusReceiveListener(IModemStatusReceiveListener listener) {
+		synchronized (modemStatusListeners) {
+			if (!modemStatusListeners.contains(listener))
+				modemStatusListeners.add(listener);
+		}
+	}
+	
+	/**
+	 * Removes the given Modem Status receive listener from the list of Modem Status 
+	 * receive listeners.
+	 * 
+	 * <p>If the listener is not included in the list, this method does nothing.</p>
+	 * 
+	 * @param listener Modem Status receive listener to remove.
+	 * 
+	 * @see IModemStatusReceiveListener
+	 * @see #addModemStatusReceiveListener(IModemStatusReceiveListener)
+	 */
+	public void removeModemStatusReceiveListener(IModemStatusReceiveListener listener) {
+		synchronized (modemStatusListeners) {
+			if (modemStatusListeners.contains(listener))
+				modemStatusListeners.remove(listener);
+		}
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see java.lang.Thread#run()
@@ -338,92 +379,94 @@ public class DataReader extends Thread {
 		RemoteXBeeDevice remoteDevice = null;
 		byte[] data = null;
 		
-		switch(apiType) {
-		case RECEIVE_PACKET:
-			ReceivePacket receivePacket = (ReceivePacket)apiPacket;
-			remoteDevice = network.getDeviceBy64BitAddress(receivePacket.get64bitSourceAddress());
-			if (remoteDevice == null) {
-				remoteDevice = new RemoteXBeeDevice(xbeeDevice, receivePacket.get64bitSourceAddress());
-				network.addRemoteDevice(remoteDevice);
+		try {
+			switch(apiType) {
+			case RECEIVE_PACKET:
+				ReceivePacket receivePacket = (ReceivePacket)apiPacket;
+				remoteDevice = network.getDevice(receivePacket.get64bitSourceAddress());
+				if (remoteDevice == null) {
+					remoteDevice = new RemoteXBeeDevice(xbeeDevice, receivePacket.get64bitSourceAddress());
+					network.addRemoteDevice(remoteDevice);
+				}
+				data = receivePacket.getRFData();
+				notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
+				break;
+			case RX_64:
+				RX64Packet rx64Packet = (RX64Packet)apiPacket;
+				remoteDevice = network.getDevice(rx64Packet.get64bitSourceAddress());
+				if (remoteDevice == null) {
+					remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64Packet.get64bitSourceAddress());
+					network.addRemoteDevice(remoteDevice);
+				}
+				data = rx64Packet.getRFData();
+				notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
+				break;
+			case RX_16:
+				RX16Packet rx16Packet = (RX16Packet)apiPacket;
+				remoteDevice = network.getDevice(rx16Packet.get16bitSourceAddress());
+				if (remoteDevice == null) {
+					remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16Packet.get16bitSourceAddress());
+					network.addRemoteDevice(remoteDevice);
+				}
+				data = rx16Packet.getRFData();
+				notifyDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
+				break;
+			case IO_DATA_SAMPLE_RX_INDICATOR:
+				IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
+				remoteDevice = network.getDevice(ioSamplePacket.get64bitSourceAddress());
+				if (remoteDevice == null) {
+					remoteDevice = new RemoteXBeeDevice(xbeeDevice, ioSamplePacket.get64bitSourceAddress());
+					network.addRemoteDevice(remoteDevice);
+				}
+				notifyIOSampleReceived(remoteDevice, ioSamplePacket.getIOSample());
+				break;
+			case RX_IO_64:
+				RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
+				remoteDevice = network.getDevice(rx64IOPacket.get64bitSourceAddress());
+				if (remoteDevice == null) {
+					remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64IOPacket.get64bitSourceAddress());
+					network.addRemoteDevice(remoteDevice);
+				}
+				notifyIOSampleReceived(remoteDevice, rx64IOPacket.getIOSample());
+				break;
+			case RX_IO_16:
+				RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
+				remoteDevice = network.getDevice(rx16IOPacket.get16bitSourceAddress());
+				if (remoteDevice == null) {
+					remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16IOPacket.get16bitSourceAddress());
+					network.addRemoteDevice(remoteDevice);
+				}
+				notifyIOSampleReceived(remoteDevice, rx16IOPacket.getIOSample());
+				break;
+			case MODEM_STATUS:
+				ModemStatusPacket modemStatusPacket = (ModemStatusPacket)apiPacket;
+				notifyModemStatusReceived(modemStatusPacket.getStatus());
+			default:
+				break;
 			}
-			data = receivePacket.getRFData();
-			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
-			break;
-		case RX_64:
-			RX64Packet rx64Packet = (RX64Packet)apiPacket;
-			remoteDevice = network.getDeviceBy64BitAddress(rx64Packet.get64bitSourceAddress());
-			if (remoteDevice == null) {
-				remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64Packet.get64bitSourceAddress());
-				network.addRemoteDevice(remoteDevice);
-			}
-			data = rx64Packet.getRFData();
-			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
-			break;
-		case RX_16:
-			RX16Packet rx16Packet = (RX16Packet)apiPacket;
-			remoteDevice = network.getDeviceBy16BitAddress(rx16Packet.get16bitSourceAddress());
-			if (remoteDevice == null) {
-				remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16Packet.get16bitSourceAddress());
-				network.addRemoteDevice(remoteDevice);
-			}
-			data = rx16Packet.getRFData();
-			notifySerialDataReceived(new XBeeMessage(remoteDevice, data, apiPacket.isBroadcast()));
-			break;
-		case IO_DATA_SAMPLE_RX_INDICATOR:
-			IODataSampleRxIndicatorPacket ioSamplePacket = (IODataSampleRxIndicatorPacket)apiPacket;
-			remoteDevice = network.getDeviceBy64BitAddress(ioSamplePacket.get64bitSourceAddress());
-			if (remoteDevice == null) {
-				remoteDevice = new RemoteXBeeDevice(xbeeDevice, ioSamplePacket.get64bitSourceAddress());
-				network.addRemoteDevice(remoteDevice);
-			}
-			notifyIOSampleReceived(remoteDevice, ioSamplePacket.getIOSample());
-			break;
-		case RX_IO_64:
-			RX64IOPacket rx64IOPacket = (RX64IOPacket)apiPacket;
-			remoteDevice = network.getDeviceBy64BitAddress(rx64IOPacket.get64bitSourceAddress());
-			if (remoteDevice == null) {
-				remoteDevice = new RemoteXBeeDevice(xbeeDevice, rx64IOPacket.get64bitSourceAddress());
-				network.addRemoteDevice(remoteDevice);
-			}
-			notifyIOSampleReceived(remoteDevice, rx64IOPacket.getIOSample());
-			break;
-		case RX_IO_16:
-			RX16IOPacket rx16IOPacket = (RX16IOPacket)apiPacket;
-			remoteDevice = network.getDeviceBy16BitAddress(rx16IOPacket.get16bitSourceAddress());
-			if (remoteDevice == null) {
-				remoteDevice = new RemoteRaw802Device(xbeeDevice, rx16IOPacket.get16bitSourceAddress());
-				network.addRemoteDevice(remoteDevice);
-			}
-			notifyIOSampleReceived(remoteDevice, rx16IOPacket.getIOSample());
-			break;
-		default:
-			break;
+		} catch (XBeeException e) {
+			logger.error(e.getMessage(), e);
 		}
 	}
 	
 	/**
-	 * Notifies subscribed serial data receive listeners that serial data has 
-	 * been received.
+	 * Notifies subscribed data receive listeners that data has been received.
 	 *
-	 * @param address The XBee address of the node that sent the data.
-	 * @param data The received data.
-	 * @param isBroadcastData Indicates whether or not the data was sent via 
-	 *                        broadcast to execute the corresponding broadcast 
-	 *                        callback.
+	 * @param xbeeMessage The XBee message.
 	 */
-	private void notifySerialDataReceived(final XBeeMessage xbeeMessage) {
+	private void notifyDataReceived(final XBeeMessage xbeeMessage) {
 		if (xbeeMessage.isBroadcast())
 			logger.info(connectionInterface.toString() + 
-					"Broadcast serial data received from {} >> {}.", xbeeMessage.getDevice().get64BitAddress(), HexUtils.prettyHexString(xbeeMessage.getData()));
+					"Broadcast data received from {} >> {}.", xbeeMessage.getDevice().get64BitAddress(), HexUtils.prettyHexString(xbeeMessage.getData()));
 		else
 			logger.info(connectionInterface.toString() + 
-					"Serial data received from {} >> {}.", xbeeMessage.getDevice().get64BitAddress(), HexUtils.prettyHexString(xbeeMessage.getData()));
+					"Data received from {} >> {}.", xbeeMessage.getDevice().get64BitAddress(), HexUtils.prettyHexString(xbeeMessage.getData()));
 		
 		try {
-			synchronized (serialDataReceiveListeners) {
+			synchronized (dataReceiveListeners) {
 				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
-						serialDataReceiveListeners.size()));
-				for (final ISerialDataReceiveListener listener:serialDataReceiveListeners) {
+						dataReceiveListeners.size()));
+				for (final IDataReceiveListener listener:dataReceiveListeners) {
 					executor.execute(new Runnable() {
 						/*
 						 * (non-Javadoc)
@@ -432,15 +475,9 @@ public class DataReader extends Thread {
 						@Override
 						public void run() {
 							/* Synchronize the listener so it is not called 
-							 twice. That is, let the listener to finish its job.
-							 
-							 By synchronizing the listener also unicast and 
-							 broadcast data reception are synchronized, that is, 
-							 while unicast data is being processed, broadcast 
-							 data is waiting till it finishes, and the other 
-							 way around. */
+							 twice. That is, let the listener to finish its job. */
 							synchronized (listener) {
-								listener.serialDataReceived(xbeeMessage);
+								listener.dataReceived(xbeeMessage);
 							}
 						}
 					});
@@ -527,6 +564,43 @@ public class DataReader extends Thread {
 							// twice. That is, let the listener to finish its job.
 							synchronized (listener) {
 								listener.ioSampleReceived(remoteDevice, ioSample);
+							}
+						}
+					});
+				}
+				executor.shutdown();
+			}
+		} catch (Exception e) {
+			logger.error(e.getMessage(), e);
+		}
+	}
+	
+	/**
+	 * Notifies subscribed Modem Status listeners that Modem Status event has been received.
+	 *
+	 * @param modemStatusEvent The Modem Status event.
+	 * 
+	 * @see ModemStatusEvent
+	 */
+	private void notifyModemStatusReceived(final ModemStatusEvent modemStatusEvent) {
+		logger.debug(connectionInterface.toString() + "Modem Status event received.");
+		
+		try {
+			synchronized (modemStatusListeners) {
+				ScheduledExecutorService executor = Executors.newScheduledThreadPool(Math.min(MAXIMUM_PARALLEL_LISTENER_THREADS, 
+						modemStatusListeners.size()));
+				for (final IModemStatusReceiveListener listener:modemStatusListeners) {
+					executor.execute(new Runnable() {
+						/*
+						 * (non-Javadoc)
+						 * @see java.lang.Runnable#run()
+						 */
+						@Override
+						public void run() {
+							// Synchronize the listener so it is not called 
+							// twice. That is, let the listener to finish its job.
+							synchronized (listener) {
+								listener.modemStatusEventReceived(modemStatusEvent);
 							}
 						}
 					});

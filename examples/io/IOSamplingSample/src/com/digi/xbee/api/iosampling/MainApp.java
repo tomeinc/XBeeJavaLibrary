@@ -67,7 +67,7 @@ public class MainApp {
 			
 			// Obtain the remote XBee device from the XBee network.
 			XBeeNetwork xbeeNetwork = localDevice.getNetwork();
-			RemoteXBeeDevice remoteDevice = xbeeNetwork.discoverDeviceByID(REMOTE_DEVICE_ID);
+			RemoteXBeeDevice remoteDevice = xbeeNetwork.discoverDevice(REMOTE_DEVICE_ID);
 			if (remoteDevice == null) {
 				System.out.println("Couldn't find the remote XBee device with 'REMOTE' Node Identifier.");
 				System.exit(1);
@@ -86,7 +86,7 @@ public class MainApp {
 			remoteDevice.setIOSamplingRate(IO_SAMPLING_RATE);
 			
 			// Register a listener to handle the samples received by the local device.
-			localDevice.startListeningForIOSamples(new IIOSampleReceiveListener() {
+			localDevice.addIOSampleListener(new IIOSampleReceiveListener() {
 				@Override
 				public void ioSampleReceived(RemoteXBeeDevice remoteDevice, IOSample ioSample) {
 					System.out.println("New sample received from " + remoteDevice.get64BitAddress() +
