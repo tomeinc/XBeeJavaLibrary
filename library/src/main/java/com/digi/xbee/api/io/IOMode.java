@@ -16,6 +16,8 @@ import java.util.HashMap;
 /**
  * Enumerates the different Input/Output modes that an IO line can be 
  * configured with.
+ * 
+ * @see IOLine
  */
 public enum IOMode {
 
@@ -41,18 +43,19 @@ public enum IOMode {
 	}
 	
 	/**
-	 * Creates a new IO mode with the given ID.
+	 * Class constructor. Instantiates a new {@code IOMode} enumeration entry 
+	 * with the given parameters.
 	 * 
 	 * @param id IO mode ID.
 	 * @param name IO mode name.
 	 */
-	IOMode(int id, String name) {
+	private IOMode(int id, String name) {
 		this.id = id;
 		this.name = name;
 	}
 	
 	/**
-	 * Retrieves the IO mode ID.
+	 * Returns the IO mode ID.
 	 * 
 	 * @return IO mode ID.
 	 */
@@ -61,7 +64,7 @@ public enum IOMode {
 	}
 	
 	/**
-	 * Retrieves the IO mode name.
+	 * Returns the IO mode name.
 	 * 
 	 * @return IO mode name.
 	 */
@@ -70,18 +73,18 @@ public enum IOMode {
 	}
 	
 	/**
-	 * Retrieves the {@code IOMode} corresponding to the provided mode ID.
+	 * Returns the {@code IOMode} associated to the provided mode ID.
 	 * 
 	 * @param modeID The ID of the {@code IOMode} to retrieve.
 	 * 
-	 * @return The {@code IOMode} corresponding to the provided mode ID.
+	 * @return The {@code IOMode} associated to the provided mode ID.
 	 */
 	public static IOMode getIOMode(int modeID) {
 		return getIOMode(modeID, null);
 	}
 	
 	/**
-	 * Retrieves the {@code IOMode} corresponding to the provided mode ID and 
+	 * Returns the {@code IOMode} corresponding to the provided mode ID and 
 	 * IO line.
 	 * 
 	 * @param modeID The ID of the {@code IOMode} to retrieve.
@@ -89,6 +92,8 @@ public enum IOMode {
 	 * 
 	 * @return The {@code IOMode} corresponding to the provided mode ID and 
 	 *         IO line.
+	 * 
+	 * @see IOLine
 	 */
 	public static IOMode getIOMode(int modeID, IOLine ioLine) {
 		// If IO line is provided and IO value is 2, check PWM capability.
