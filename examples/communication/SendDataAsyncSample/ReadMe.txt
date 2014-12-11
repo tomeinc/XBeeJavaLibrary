@@ -1,20 +1,20 @@
   Introduction
   ------------
-  This is a sample Java application to show how to send data asynchronously from
-  the XBee device to another remote device on the same network using the XBee 
-  Java Library. Transmitting data asynchronously means the execution will not 
-  be blocked during the transmit request, but you will not be able to know if 
-  the data was sent successfully.
+  This sample Java application shows how to send data asynchronously from the 
+  XBee device to another remote device on the same network using the XBee Java 
+  Library. Transmitting data asynchronously means the execution will not be 
+  blocked during the transmit request, but you will not be able to determine 
+  if the data was sent successfully.
   
   The application sends data asynchronously to a remote XBee device on the 
-  network with a specific Node Identifier (name).
+  network with a specific node identifier (name).
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.
 
 
   Files
-  ----------
+  -----
     * com.digi.xbee.api.senddataasync.MainApp.java:
       Main application class. It instantiates an XBee device, establishes a 
       serial connection with it and sends the data to the specified XBee device. 
@@ -52,11 +52,14 @@
              'REMOTE' text.
        
     3) Ensure that the modules are in API mode and on the same network.
-       For further information on how to perform this task, go to [...]
+       For further information on how to perform this task, read the 
+       'Configuring Your XBee Modules' topic of the Getting Started guide.
        
     4) Set the port and baud rate of the sender (local) XBee radio in the 
-       MainApp class. If you do not know the serial/USB port where your 
-       module is connected to, see [...]
+       MainApp class.
+       If you configured the modules in the previous step with the XCTU, you 
+       will see the port number and baud rate in the 'Port' label of the device 
+       on the left view.
 
 
   Running the example

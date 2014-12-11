@@ -1,21 +1,21 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.exceptions;
 
 import com.digi.xbee.api.models.ATCommandStatus;
 
 /**
  * This exception will be thrown when receiving a command response containing 
- * a status different than {@code ATCommandStatus.OK} after sending an XBee 
+ * a status different than {@code ATCommandStatus#OK} after sending an XBee 
  * AT command.
  * 
  * @see CommunicationException
@@ -76,7 +76,7 @@ public class ATCommandException extends CommunicationException {
 	}
 	
 	/**
-	 * Retrieves the {@code ATCommandStatus} of the exception containing 
+	 * Returns the {@code ATCommandStatus} of the exception containing 
 	 * information about the AT command response.
 	 * 
 	 * @return The status of the AT command response.
@@ -88,7 +88,7 @@ public class ATCommandException extends CommunicationException {
 	}
 	
 	/**
-	 * Retrieves the text containing the status of the AT command response 
+	 * Returns the text containing the status of the AT command response 
 	 * from the exception.
 	 * 
 	 * @return The text with the status of the AT command response.

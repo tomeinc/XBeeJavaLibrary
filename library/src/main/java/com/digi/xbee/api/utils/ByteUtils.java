@@ -1,14 +1,14 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.utils;
 
 import java.io.ByteArrayInputStream;
@@ -38,10 +38,15 @@ public class ByteUtils {
 		if (inputStream == null)
 			throw new NullPointerException("Input stream cannot be null.");
 		if (numBytes < 0)
-			throw new IllegalArgumentException("Number of bytes to read must be great than 0.");
+			throw new IllegalArgumentException("Number of bytes to read must be greater than 0.");
 		
 		byte[] data = new byte[numBytes];
-		inputStream.read(data, 0, numBytes);
+		int len = inputStream.read(data, 0, numBytes);
+		if (len < numBytes) {
+			byte[] d = new byte[len];
+			System.arraycopy(data, 0, d, 0, len);
+			return d;
+		}
 		return data;
 	}
 	

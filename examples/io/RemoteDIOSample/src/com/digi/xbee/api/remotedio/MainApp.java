@@ -1,14 +1,14 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.remotedio;
 
 import java.util.Timer;
@@ -41,10 +41,10 @@ public class MainApp {
 	private static final int BAUD_RATE = 9600;
 	private static final int READ_TIMEOUT = 250;
 	
-	private static final String REMOTE_DEVICE_ID = "REMOTE";
+	private static final String REMOTE_NODE_IDENTIFIER = "REMOTE";
 	
 	private static final IOLine IOLINE_IN = IOLine.DIO3_AD3;
-	private static final IOLine IOLINE_OUT = IOLine.DIO12;
+	private static final IOLine IOLINE_OUT = IOLine.DIO4_AD4;
 	
 	/**
 	 * Application main method.
@@ -65,9 +65,10 @@ public class MainApp {
 			
 			// Obtain the remote XBee device from the XBee network.
 			XBeeNetwork xbeeNetwork = localDevice.getNetwork();
-			RemoteXBeeDevice remoteDevice = xbeeNetwork.discoverDevice(REMOTE_DEVICE_ID);
+			RemoteXBeeDevice remoteDevice = xbeeNetwork.discoverDevice(REMOTE_NODE_IDENTIFIER);
 			if (remoteDevice == null) {
-				System.out.println("Couldn't find the remote XBee device with 'REMOTE' Node Identifier.");
+				System.out.println("Couldn't find the remote XBee device with '" + REMOTE_NODE_IDENTIFIER + "' Node Identifier.");
+				localDevice.close();
 				System.exit(1);
 			}
 			

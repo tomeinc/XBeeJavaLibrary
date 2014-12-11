@@ -1,14 +1,14 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.models;
 
 import java.util.HashMap;
@@ -46,7 +46,7 @@ public enum XBeeDiscoveryStatus {
 	 * Class constructor. Instantiates a new enumeration element of type 
 	 * {@code XBeeDiscoveryStatus} with the given parameters.
 	 * 
-	 * @param id Discovery Status ID.
+	 * @param id Discovery status ID.
 	 * @param description Discovery status description.
 	 */
 	private XBeeDiscoveryStatus(int id, String description) {
@@ -55,7 +55,7 @@ public enum XBeeDiscoveryStatus {
 	}
 	
 	/**
-	 * Retrieves the discovery status ID.
+	 * Returns the discovery status ID.
 	 * 
 	 * @return The discovery status ID.
 	 */
@@ -64,7 +64,7 @@ public enum XBeeDiscoveryStatus {
 	}
 	
 	/**
-	 * Retrieves the discovery status description.
+	 * Returns the discovery status description.
 	 * 
 	 * @return Discovery status description.
 	 */
@@ -73,7 +73,7 @@ public enum XBeeDiscoveryStatus {
 	}
 	
 	/**
-	 * Retrieves the {@code XBeeDiscoveryStatus} associated to the given ID.
+	 * Returns the {@code XBeeDiscoveryStatus} associated to the given ID.
 	 * 
 	 * @param id ID of the {@code XBeeDiscoveryStatus} to retrieve.
 	 * 

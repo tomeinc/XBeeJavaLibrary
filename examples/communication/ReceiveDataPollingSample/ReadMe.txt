@@ -1,17 +1,17 @@
   Introduction
   ------------
-  This is a sample Java application to show how data packets are received 
-  from another XBee device on the same network using a polling mechanism.
+  This sample Java application shows how data packets are received from another 
+  XBee device on the same network using a polling mechanism.
   
-  The application prints the data that was received to the standard output 
-  in ASCII and hexadecimal formats after the sender address.
+  The application prints the data that was received to the standard output in 
+  ASCII and hexadecimal formats after the sender address.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.
 
 
   Files
-  ----------
+  -----
     * com.digi.xbee.api.receivedatapolling.MainApp.java:
       Main application class. It instantiates an XBee device and establishes a 
       serial connection with it.
@@ -36,12 +36,14 @@
        computer's USB or serial ports.
        
     3) Ensure that the modules are in API mode and on the same network.
-       For further information on how to perform this task, go to [...]
+       For further information on how to perform this task, read the 
+       'Configuring Your XBee Modules' topic of the Getting Started guide.
        
     4) Set the port and baud rate of the receiver XBee radio in the MainApp 
        class.
-       If you do not know the serial/USB port where your module is connected to,
-       see [...]
+       If you configured the modules in the previous step with the XCTU, you 
+       will see the port number and baud rate in the 'Port' label of the device 
+       on the left view.
 
 
   Running the example

@@ -1,20 +1,20 @@
   Introduction
   ------------
-  This is a sample Java application to show how to set and get parameters of 
-  an XBee device (can be either a local or a remote device). These methods 
-  are intended to be used when you need to set or get the value of a parameter 
-  that does not have its own getter and setter within the XBee device object.
+  This sample Java application shows how to set and get parameters of a local 
+  or remote XBee device. This method is intended to be used when you need to 
+  set or get the value of a parameter that does not have its own getter and 
+  setter within the XBee device object.
   
-  The application sets the value of 4 parameters with different value types: 
-  string, byte array and integer. Then it reads them from the device 
-  verifying the read values are the same as the values that were set.
+  The application sets the value of four parameters with different value types: 
+  string, byte array and integer. Then it reads them from the device to verify 
+  that the read values are the same as the values that were set.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, but it 
         can be applied to any other local or remote XBee device class.
 
 
   Files
-  ----------
+  -----
     * com.digi.xbee.api.getsetparameters.MainApp.java:
       Main application class. It instantiates an XBee device, establishes a 
       serial connection with it and sets and gets 4 different parameters. 
@@ -28,6 +28,7 @@
   
     * One XBee radio in API mode and its corresponding carrier board (XBIB 
       or XBee Development Board).
+    * The XCTU application (available at www.digi.com/xctu).
 
 
   Example setup
@@ -36,11 +37,13 @@
        computer's USB or serial port.
        
     2) Ensure that the module is in API mode.
-       For further information on how to perform this task, go to [...]
+       For further information on how to perform this task, read the 
+       'Configuring Your XBee Modules' topic of the Getting Started guide.
        
     3) Set the port and baud rate of the XBee radio in the MainApp class.
-       If you do not know the serial/USB port where your module is connected to,
-       see [...]
+       If you configured the module in the previous step with the XCTU, you 
+       will see the port number and baud rate in the 'Port' label of the device 
+       on the left view.
 
 
   Running the example

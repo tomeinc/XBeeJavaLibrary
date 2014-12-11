@@ -1,16 +1,16 @@
   Introduction
   ------------
-  This is a sample Java application to show how to send data from the local XBee 
+  This sample Java application shows how to send data from the local XBee 
   device to all remote devices on the same network (broadcast) using the XBee 
-  Java Library. The application will block during the transmission request, 
-  but you will be notified if there is any error during the process.
+  Java Library. The application will block during the transmission request, but 
+  you will be notified if there is any error during the process.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.
 
 
   Files
-  ----------
+  -----
     * com.digi.xbee.api.sendbroadcastdata.MainApp.java:
       Main application class. It instantiates an XBee device, establishes a 
       serial connection with it and sends a broadcast transmission. Finally it 
@@ -32,11 +32,13 @@
        computer's USB or serial ports.
        
     2) Ensure that the modules are in API mode and on the same network.
-       For further information on how to perform this task, go to [...]
+       For further information on how to perform this task, read the 
+       'Configuring Your XBee Modules' topic of the Getting Started guide.
        
     3) Set the port and baud rate of the sender XBee radio in the MainApp class.
-       If you do not know the serial/USB port where your module is connected to,
-       see [...]
+       If you configured the modules in the previous step with the XCTU, you 
+       will see the port number and baud rate in the 'Port' label of the device 
+       on the left view.
 
 
   Running the example
@@ -57,7 +59,8 @@
   modules of the network. When that happens, a line with the result of the 
   operation is printed to the standard output:
        
-    Sending broadcast data >> 48 65 6C 6C 6F 20 58 42 65 65 73 21 | Hello XBees!... Success
+    Sending broadcast data 'Hello XBee World!'...
+    Success
        
   Verify that in the XCTU console a new RX frame has been received. Select it 
   and review the details, some of the details will be similar to:
@@ -66,6 +69,6 @@
     - Length:                  Depends on the XBee protocol.
     - Frame type:              Depends on the XBee protocol.
     - 64-bit source address:   The XBee sender's 64-bit address.
-    - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 73 21
-                               Hello XBees!
+    - RF data/Received data:   48 65 6C 6C 6F 20 58 42 65 65 20 57 6F 72 6C 64 21
+                               Hello XBee World!
        

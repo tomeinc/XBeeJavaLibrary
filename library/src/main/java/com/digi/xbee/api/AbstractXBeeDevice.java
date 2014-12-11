@@ -57,6 +57,7 @@ import com.digi.xbee.api.packet.XBeeAPIPacket;
 import com.digi.xbee.api.packet.APIFrameType;
 import com.digi.xbee.api.packet.XBeePacket;
 import com.digi.xbee.api.packet.common.ATCommandPacket;
+import com.digi.xbee.api.packet.common.ATCommandQueuePacket;
 import com.digi.xbee.api.packet.common.ATCommandResponsePacket;
 import com.digi.xbee.api.packet.common.IODataSampleRxIndicatorPacket;
 import com.digi.xbee.api.packet.common.RemoteATCommandPacket;
@@ -593,7 +594,9 @@ public abstract class AbstractXBeeDevice {
 		// TODO Should be allow to update a local from a remote or viceversa?? Maybe 
 		// this must be in the Local/Remote device class(es) and not here... 
 		
-		this.nodeID = device.getNodeID();
+		// Only update the Node Identifier if the provided is not null.
+		if (device.getNodeID() != null)
+			this.nodeID = device.getNodeID();
 		
 		// Only update the 64-bit address if the original is null or unknown.
 		XBee64BitAddress addr64 = device.get64BitAddress();
@@ -849,9 +852,10 @@ public abstract class AbstractXBeeDevice {
 					remoteATCommandOptions |= RemoteATCommandOptions.OPTION_APPLY_CHANGES;
 				packet = new RemoteATCommandPacket(getNextFrameID(), get64BitAddress(), remote16BitAddress, remoteATCommandOptions, command.getCommand(), command.getParameter());
 			} else {
-				// TODO: If the apply configuration changes option is enabled, send an AT command frame. 
-				//       If the apply configuration changes option is disabled, send a queue AT command frame.
-				packet = new ATCommandPacket(getNextFrameID(), command.getCommand(), command.getParameter());
+				if (isApplyConfigurationChangesEnabled())
+					packet = new ATCommandPacket(getNextFrameID(), command.getCommand(), command.getParameter());
+				else
+					packet = new ATCommandQueuePacket(getNextFrameID(), command.getCommand(), command.getParameter());
 			}
 			if (command.getParameter() == null)
 				logger.debug(toString() + "Sending AT command '{}'.", command.getCommand());
@@ -869,7 +873,7 @@ public abstract class AbstractXBeeDevice {
 				else if (answerPacket instanceof RemoteATCommandResponsePacket)
 					response = new ATCommandResponse(command, ((RemoteATCommandResponsePacket)answerPacket).getCommandValue(), ((RemoteATCommandResponsePacket)answerPacket).getStatus());
 				
-				if (response.getResponse() != null)
+				if (response != null && response.getResponse() != null)
 					logger.debug(toString() + "AT command response: {}.", HexUtils.prettyHexString(response.getResponse()));
 				else
 					logger.debug(toString() + "AT command response: null.");
@@ -1747,7 +1751,7 @@ public abstract class AbstractXBeeDevice {
 		
 		byte[] bitfield = getParameter("IC");
 		TreeSet<IOLine> lines = new TreeSet<IOLine>();
-		int mask = (bitfield[0] << 8) + bitfield[1];
+		int mask = (bitfield[0] << 8) + (bitfield[1] & 0xFF);
 		
 		for (int i = 0; i < 16; i++) {
 			if (ByteUtils.isBitEnabled(mask, i))
@@ -1769,8 +1773,12 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * <p>To know if the 'apply configuration changes' option is enabled, use 
 	 * the {@code isApplyConfigurationChangesEnabled()} method. And to 
-	 * enable/disable this feature the method 
+	 * enable/disable this feature, the method 
 	 * {@code enableApplyConfigurationChanges(boolean)}.</p>
+	 * 
+	 * <p>Applying changes does not imply the modifications will persist 
+	 * through subsequent resets. To do so, use the {@code writeChanges()} 
+	 * method.</p>
 	 * 
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout sending the get Apply
@@ -1779,6 +1787,8 @@ public abstract class AbstractXBeeDevice {
 	 * 
 	 * @see #enableApplyConfigurationChanges(boolean)
 	 * @see #isApplyConfigurationChangesEnabled()
+	 * @see #setParameter(String, byte[])
+	 * @see #writeChanges()
 	 */
 	public void applyChanges() throws TimeoutException, XBeeException {
 		executeParameter("AC");
@@ -1821,17 +1831,18 @@ public abstract class AbstractXBeeDevice {
 			throw new InterfaceNotOpenException();
 		
 		// Try to build an IO Sample from the sample payload.
-		byte[] samplePayload = getParameter("IS");
+		byte[] samplePayload = null;
 		IOSample ioSample;
 		
-		// If it is a local 802.15.4 device, the response does not contain the
-		// IO sample, so we have to create a packet listener to receive the
-		// sample.
+		// The response to the IS command in local 802.15.4 devices is empty, 
+		// so we have to create a packet listener to receive the IO sample.
 		if (!isRemote() && getXBeeProtocol() == XBeeProtocol.RAW_802_15_4) {
+			executeParameter("IS");
 			samplePayload = receiveRaw802IOPacket();
 			if (samplePayload == null)
 				throw new TimeoutException("Timeout waiting for the IO response packet.");
-		}
+		} else
+			samplePayload = getParameter("IS");
 		
 		try {
 			ioSample = new IOSample(samplePayload);
@@ -1921,6 +1932,21 @@ public abstract class AbstractXBeeDevice {
 	/**
 	 * Sets the given parameter with the provided value in this XBee device.
 	 * 
+	 * <p>If the 'apply configuration changes' option is enabled in this device,
+	 * the configured value for the given parameter will be immediately applied, 
+	 * if not the method {@code applyChanges()} must be invoked to apply it.</p>
+	 * 
+	 * <p>Use:</p>
+	 * <ul>
+	 * <li>Method {@code isApplyConfigurationChangesEnabled()} to know 
+	 * if the 'apply configuration changes' option is enabled.</li>
+	 * <li>Method {@code enableApplyConfigurationChanges(boolean)} to enable or
+	 * disable this option.</li>
+	 * </ul>
+	 * 
+	 * <p>To make parameter modifications persist through subsequent resets use 
+	 * the {@code writeChanges()} method.</p>
+	 * 
 	 * @param parameter The name of the parameter to be set.
 	 * @param parameterValue The value of the parameter to set.
 	 * 
@@ -1930,8 +1956,12 @@ public abstract class AbstractXBeeDevice {
 	 * @throws TimeoutException if there is a timeout setting the parameter.
 	 * @throws XBeeException if there is any other XBee related exception.
 	 * 
-	 * @see #executeParameter(String)
+	 * @see #applyChanges()
+	 * @see #enableApplyConfigurationChanges(boolean)
+	 * @see #executeParameter(String) 
 	 * @see #getParameter(String)
+	 * @see #isApplyConfigurationChangesEnabled()
+	 * @see #writeChanges()
 	 */
 	public void setParameter(String parameter, byte[] parameterValue) throws TimeoutException, XBeeException {
 		if (parameterValue == null)
@@ -2245,10 +2275,23 @@ public abstract class AbstractXBeeDevice {
 	 * module reverts back to previously saved parameters the next time the 
 	 * module is powered-on.</p>
 	 * 
+	 * <p>Writing the parameter modifications does not mean those values are 
+	 * immediately applied, this depends on the status of the 'apply 
+	 * configuration changes' option. Use method 
+	 * {@code isApplyConfigurationChangesEnabled()} to get its status and 
+	 * {@code enableApplyConfigurationChanges(boolean)} to enable/disable the 
+	 * option. If it is disable method {@code applyChanges()} can be used in 
+	 * order to manually apply the changes.</p>
+	 * 
 	 * @throws InterfaceNotOpenException if this device connection is not open.
 	 * @throws TimeoutException if there is a timeout executing the write 
 	 *                          changes command.
 	 * @throws XBeeException if there is any other XBee related exception.
+	 * 
+	 * @see #applyChanges()
+	 * @see #enableApplyConfigurationChanges(boolean)
+	 * @see #isApplyConfigurationChangesEnabled()
+	 * @see #setParameter(String, byte[])
 	 */
 	public void writeChanges() throws TimeoutException, XBeeException {
 		executeParameter("WR");

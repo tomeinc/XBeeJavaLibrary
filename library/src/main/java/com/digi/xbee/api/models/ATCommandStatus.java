@@ -1,14 +1,14 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.models;
 
 import java.util.HashMap;
@@ -28,10 +28,10 @@ public enum ATCommandStatus {
 	INVALID_COMMAND (2, "Invalid command"), 
 	INVALID_PARAMETER (3, "Invalid parameter"),
 	TX_FAILURE (4, "TX failure"),
-	UNKNOWN (64, "Unknown status");
+	UNKNOWN (255, "Unknown status");
 	
 	// Variables
-	private final int id;
+	private int id;
 	
 	private final String description;
 	
@@ -80,9 +80,11 @@ public enum ATCommandStatus {
 	 * @return The {@code ATCommandStatus} associated to the given ID.
 	 */
 	public static ATCommandStatus get(int id) {
-		if (lookupTable.get(id) == null)
-			return UNKNOWN;
-		return lookupTable.get(id);
+		ATCommandStatus status = lookupTable.get(id % 16);
+		if (status == null)
+			status = UNKNOWN;
+		status.id = id;
+		return status;
 	}
 	
 	/*

@@ -1,21 +1,21 @@
   Introduction
   ------------
-  This is a sample Java application to show how to set and read XBee digital 
-  lines of the device attached to the serial/USB port of your PC.
+  This sample Java application shows how to set and read XBee digital lines of 
+  the device attached to the serial/USB port of your PC.
   
-  The application configures two IO lines of the XBee device, one as a digital
-  input (button) and the other as a digital output (LED). Then, the 
-  application reads the status of the input line periodically and updates 
-  the output to follow the input.
+  The application configures two IO lines of the XBee device, one as a digital 
+  input (button) and the other as a digital output (LED). Then, the application 
+  reads the status of the input line periodically and updates the output to 
+  follow the input.
   
-  While the push button is pressed the LED should be lighting.
+  While the push button is pressed, the LED should be lighting.
   
   NOTE: This example uses the generic XBee device (XBeeDevice) class, 
         but it can be applied to any other local XBee device class.
 
 
   Files
-  ----------
+  -----
     * com.digi.xbee.api.localdio.MainApp.java:
       Main application class. It instantiates an XBee device, establishes a 
       serial connection with it, configures the IO lines and reads/sets the
@@ -28,6 +28,7 @@
   
     * One XBee radio in API mode and its corresponding carrier board (XBIB 
       or XBee Development Board).
+    * The XCTU application (available at www.digi.com/xctu).
 
 
   Example setup
@@ -36,11 +37,13 @@
        computer's USB or serial port.
        
     2) Ensure that the module is in API mode.
-       For further information on how to perform this task, go to [...]
+       For further information on how to perform this task, read the 
+       'Configuring Your XBee Modules' topic of the Getting Started guide.
        
     3) Set the port and baud rate of the XBee radio in the MainApp class.
-       If you do not know the serial/USB port where your module is connected to,
-       see [...]
+       If you configured the module in the previous step with the XCTU, you 
+       will see the port number and baud rate in the 'Port' label of the device 
+       on the left view.
        
     4) The final step is to configure the IO lines in the example. Depending 
        on the carrier board you are using you may need to change a couple of 
@@ -48,7 +51,7 @@
          - XBIB-U-DEV board:
              * The example is already configured to use this carrier board. 
                The input line is configured to use the SW5 user button of the 
-               board and the output line is connected to the DS2 user LED. No
+               board and the output line is connected to the DS4 user LED. No
 			   further changes are necessary.
          
          - XBee Development Board:
@@ -69,5 +72,5 @@
        boards it is the DIO3.
        
     2) Verify that the status of the LED corresponding to the digital output
-       line changes. In the XBIB boards it is the DIO12.
+       line changes. In the XBIB boards it is the DIO4.
        

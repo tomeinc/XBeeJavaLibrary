@@ -157,8 +157,8 @@ public class IOSample {
 		digitalLSBMask = ioSamplePayload[2] & 0xFF;	// 1 1 1 1 1 1 1 1
 		// Combine the masks.
 		digitalMask = (digitalHSBMask << 8) + digitalLSBMask;
-		// Obtain the analog mask.                                              // Available analog IOs in 802.15.4
-		analogMask = ((ioSamplePayload[1] <<8) + ioSamplePayload[2]) & 0x7E00;	// 0 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0
+		// Obtain the analog mask.                                                          // Available analog IOs in 802.15.4
+		analogMask = ((ioSamplePayload[1] << 8) + (ioSamplePayload[2] & 0xFF)) & 0x7E00;	// 0 1 1 1 1 1 1 0 0 0 0 0 0 0 0 0
 		
 		// Read the digital values (if any). There are 9 possible digital lines in 
 		// 802.15.4 protocol. The digital mask indicates if there is any digital 
@@ -322,6 +322,20 @@ public class IOSample {
 	/**
 	 * Returns the digital values map.
 	 * 
+	 * <p>To verify if this sample contains a valid digital values, use the 
+	 * method {@code hasDigitalValues()}.</p>
+	 * 
+	 * <pre>
+	 * {@code
+	 * if (ioSample.hasDigitalValues()) {
+	 *     HashMap<IOLine, IOValue> values = ioSample.getDigitalValues();
+	 *     ...
+	 * } else {
+	 *     ...
+	 * }
+	 * }
+	 * </pre>
+	 * 
 	 * @return {@code HashMap} with the digital value of each configured IO 
 	 *         line.
 	 * 
@@ -337,12 +351,24 @@ public class IOSample {
 	/**
 	 * Returns the digital value of the provided IO line.
 	 * 
+	 * <p>To verify if this sample contains a digital value for the given 
+	 * {@code IOLine}, use the method {@code hasDigitalValue(IOLine)}.</p>
+	 * 
+	 * <pre>
+	 * {@code
+	 * if (ioSample.hasDigitalValue(IOLine.DIO0_AD0)) {
+	 *     IOValue value = ioSample.getDigitalValue(IOLine.DIO0_AD0);
+	 *     ...
+	 * } else {
+	 *     ...
+	 * }
+	 * }
+	 * </pre>
+	 * 
 	 * @param ioLine The IO line to get its digital value.
 	 * 
-	 * @return The {@code IOValue} of the given IO line.
-	 * 
-	 * @throws IllegalArgumentException if the given IO line does not have 
-	 *                                  an associated digital value.
+	 * @return The {@code IOValue} of the given IO line or {@code null} if the
+	 *         IO sample does not contain a digital value for the given IO line.
 	 * 
 	 * @see #getDigitalValues()
 	 * @see #hasDigitalValues()
@@ -351,7 +377,7 @@ public class IOSample {
 	 */
 	public IOValue getDigitalValue(IOLine ioLine) {
 		if (!digitalValuesMap.containsKey(ioLine))
-			throw new IllegalArgumentException(ioLine.getName() + " does not have a digital value.");
+			return null;
 		return digitalValuesMap.get(ioLine);
 	}
 	
@@ -398,6 +424,20 @@ public class IOSample {
 	/**
 	 * Returns the analog values map.
 	 * 
+	 * <p>To verify if this sample contains a valid analog values, use the 
+	 * method {@code hasAnalogValues()}.</p>
+	 * 
+	 * <pre>
+	 * {@code
+	 * if (ioSample.hasAnalogValues()) {
+	 *     HashMap<IOLine, Integer> values = ioSample.getAnalogValues();
+	 *     ...
+	 * } else {
+	 *     ...
+	 * }
+	 * }
+	 * </pre>
+	 * 
 	 * @return {@code HashMap} with the analog value of each configured IO 
 	 *         line.
 	 * 
@@ -413,21 +453,33 @@ public class IOSample {
 	/**
 	 * Returns the analog value of the provided IO line.
 	 * 
+	 * <p>To verify if this sample contains an analog value for the given 
+	 * {@code IOLine}, use the method {@code hasAnalogValue(IOLine)}.</p>
+	 * 
+	 * <pre>
+	 * {@code
+	 * if (ioSample.hasAnalogValue(IOLine.DIO0_AD0)) {
+	 *     Integer value = ioSample.getAnalogValue(IOLine.DIO0_AD0);
+	 *     ...
+	 * } else {
+	 *     ...
+	 * }
+	 * }
+	 * </pre>
+	 * 
 	 * @param ioLine The IO line to get its analog value.
 	 * 
-	 * @return The analog value of the given IO line.
-	 *  
-	 * @throws IllegalArgumentException if the given IO line does not have 
-	 *                                  an associated analog value.
+	 * @return The analog value of the given IO line or {@code null} if the
+	 *         IO sample does not contain an analog value for the given IO line.
 	 * 
 	 * @see #getAnalogValues()
 	 * @see #hasAnalogValue(IOLine)
 	 * @see #hasAnalogValues()
 	 * @see IOLine
 	 */
-	public int getAnalogValue(IOLine ioLine) {
+	public Integer getAnalogValue(IOLine ioLine) {
 		if (!analogValuesMap.containsKey(ioLine))
-			throw new IllegalArgumentException(ioLine.getName() + " does not have an analog value.");
+			return null;
 		return analogValuesMap.get(ioLine);
 	}
 	
@@ -445,6 +497,20 @@ public class IOSample {
 	
 	/**
 	 * Returns the value of the power supply voltage.
+	 * 
+	 * <p>To verify if this sample contains the power supply voltage, use the 
+	 * method {@code hasPowerSupplyValue()}.</p>
+	 * 
+	 * <pre>
+	 * {@code
+	 * if (ioSample.hasPowerSupplyValue()) {
+	 *     int value = ioSample.getPowerSupplyValue();
+	 *     ...
+	 * } else {
+	 *     ...
+	 * }
+	 * }
+	 * </pre>
 	 * 
 	 * @return The value of the power supply voltage.
 	 * 

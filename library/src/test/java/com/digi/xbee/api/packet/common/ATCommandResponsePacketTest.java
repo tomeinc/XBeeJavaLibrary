@@ -431,7 +431,7 @@ public class ATCommandResponsePacketTest {
 		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
 		
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
-		String expectedStatus = Integer.toHexString(status.getId()) + " (" + status.getDescription() + ")";
+		String expectedStatus = Integer.toHexString(status.getId()).toUpperCase() + " (" + status.getDescription() + ")";
 		
 		// Call the method under test.
 		LinkedHashMap<String, String> packetParams = packet.getAPIPacketParameters();
@@ -458,7 +458,7 @@ public class ATCommandResponsePacketTest {
 		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
 		
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
-		String expectedStatus = Integer.toHexString(status.getId()) + " (" + status.getDescription() + ")";
+		String expectedStatus = Integer.toHexString(status.getId()).toUpperCase() + " (" + status.getDescription() + ")";
 		String expectedATParameter = HexUtils.prettyHexString(parameter) + " (" + new String(parameter) + ")";
 		
 		// Call the method under test.
@@ -486,7 +486,7 @@ public class ATCommandResponsePacketTest {
 		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
 		
 		String expectedATCommand = HexUtils.prettyHexString(command.getBytes()) + " (" + command + ")";
-		String expectedStatus = Integer.toHexString(status.getId()) + " (" + status.getDescription() + ")";
+		String expectedStatus = Integer.toHexString(status.getId()).toUpperCase() + " (" + status.getDescription() + ")";
 		String expectedATParameter = HexUtils.prettyHexString(parameter);
 		
 		// Call the method under test.
@@ -497,5 +497,200 @@ public class ATCommandResponsePacketTest {
 		assertThat("Status is not the expected one", packetParams.get("Status"), is(equalTo(expectedStatus)));
 		assertThat("AT Command is not the expected one", packetParams.get("AT Command"), is(equalTo(expectedATCommand)));
 		assertThat("AT Response is not the expected one", packetParams.get("Response"), is(equalTo(expectedATParameter)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#isBroadcast()}.
+	 * 
+	 * <p>Test if a AT Command Response packet is a broadcast packet, never 
+	 * should be.</p>
+	 */
+	@Test
+	public final void testIsBroadcast() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "DL";
+		ATCommandStatus status = ATCommandStatus.UNKNOWN;
+		byte[] parameter = new byte[]{0x6D, 0x79, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65};
+		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, parameter);
+		
+		// Call the method under test and verify the result.
+		assertThat("Packet should not be broadcast", packet.isBroadcast(), is(equalTo(false)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#setCommandValue(String)}.
+	 * 
+	 * <p>Test if a string command value is properly configured.</p>
+	 */
+	@Test
+	public final void testSetCommandValueString() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		ATCommandStatus status = ATCommandStatus.UNKNOWN;
+		String valueToSet = "newNIValue";
+		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, new byte[0]);
+		
+		// Call the method under test.
+		packet.setCommandValue(valueToSet);
+		
+		// Verify the result.
+		assertThat("Configured command value must be '" + valueToSet + "'", 
+				packet.getCommandValueAsString(), is(equalTo(valueToSet)));
+		assertThat("Configured command value must be '" + valueToSet + "'", 
+				packet.getCommandValue(), is(equalTo(valueToSet.getBytes())));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#setCommandValue(String)}.
+	 * 
+	 * <p>Test if a string command value with {@code null} value is properly 
+	 * configured.</p>
+	 */
+	@Test
+	public final void tesSetCommandValueStringNull() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		ATCommandStatus status = ATCommandStatus.UNKNOWN;
+		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, new byte[0]);
+		
+		// Call the method under test.
+		packet.setCommandValue((String)null);
+		
+		// Verify the result.
+		assertThat("Configured command value must be 'null'", 
+				packet.getCommandValueAsString(), is(equalTo(null)));
+		assertThat("Configured command value must be 'null'", 
+				packet.getCommandValue(), is(equalTo(null)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#setCommandValue(byte[])}.
+	 * 
+	 * <p>Test if a byte array command value is properly configured.</p>
+	 */
+	@Test
+	public final void testSetCommandValueByteArray() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		ATCommandStatus status = ATCommandStatus.UNKNOWN;
+		byte[] valueToSet = new byte[]{0x6D, 0x79, 0x44, 0x65, 0x76, 0x69, 0x63, 0x65};
+		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, new byte[0]);
+		
+		// Call the method under test.
+		packet.setCommandValue(valueToSet);
+		
+		// Verify the result.
+		assertThat("Configured command value must be '" + new String(valueToSet) + "'", 
+				packet.getCommandValue(), is(equalTo(valueToSet)));
+		assertThat("Configured command value must be '" + valueToSet + "'", 
+				packet.getCommandValueAsString(), is(equalTo(new String(valueToSet))));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#setCommandValue(byte[])}.
+	 * 
+	 * <p>Test if a byte array command value with {@code null} value is properly 
+	 * configured.</p>
+	 */
+	@Test
+	public final void testSetCommandValueByteArrayNull() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		ATCommandStatus status = ATCommandStatus.UNKNOWN;
+		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, new byte[0]);
+		
+		// Call the method under test.
+		packet.setCommandValue((byte[])null);
+		
+		// Verify the result.
+		assertThat("Configured command value must be 'null'", packet.getCommandValue(), is(equalTo(null)));
+		assertThat("Configured command value must be 'null'", packet.getCommandValueAsString(), is(equalTo(null)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#getCommandValueAsString()}.
+	 * 
+	 * <p>Test if a configured command value is properly returned.</p>
+	 */
+	@Test
+	public final void testGetCommandValueAsString() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		ATCommandStatus status = ATCommandStatus.UNKNOWN;
+		String valueToSet = "newNIValue";
+		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, valueToSet.getBytes());
+		
+		// Call the method under test.
+		String value = packet.getCommandValueAsString();
+		
+		// Verify the result.
+		assertThat("Returned command value must be '" + valueToSet + "'", value, is(equalTo(valueToSet)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#getCommandValueAsString()}.
+	 * 
+	 * <p>Test if a configured command value is properly returned.</p>
+	 */
+	@Test
+	public final void testGetCommandValueAsStringNullValue() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		ATCommandStatus status = ATCommandStatus.UNKNOWN;
+		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, null);
+		
+		// Call the method under test.
+		String value = packet.getCommandValueAsString();
+		
+		// Verify the result.
+		assertThat("Returned command value must be 'null'", value, is(equalTo(null)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#getCommandValue()}.
+	 * 
+	 * <p>Test if a configured command value is properly returned.</p>
+	 */
+	@Test
+	public final void testGetCommandValue() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		ATCommandStatus status = ATCommandStatus.UNKNOWN;
+		String valueToSet = "newNIValue";
+		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, valueToSet.getBytes());
+		
+		// Call the method under test.
+		byte[] value = packet.getCommandValue();
+		
+		// Verify the result.
+		assertThat("Returned command value must be '" + valueToSet + "'", value, is(equalTo(valueToSet.getBytes())));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.common.ATCommandResponsePacket#getCommandValue()}.
+	 * 
+	 * <p>Test if a configured command value is properly returned.</p>
+	 */
+	@Test
+	public final void testGetCommandValueNullValue() {
+		// Setup the resources for the test.
+		int frameID = 0x10;
+		String command = "NI";
+		ATCommandStatus status = ATCommandStatus.UNKNOWN;
+		ATCommandResponsePacket packet = new ATCommandResponsePacket(frameID, status, command, null);
+		
+		// Call the method under test.
+		byte[] value = packet.getCommandValue();
+		
+		// Verify the result.
+		assertThat("Returned command value must be 'null'", value, is(equalTo(null)));
 	}
 }

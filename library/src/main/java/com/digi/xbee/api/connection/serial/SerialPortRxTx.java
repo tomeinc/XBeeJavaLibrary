@@ -1,14 +1,14 @@
 /**
-* Copyright (c) 2014 Digi International Inc.,
-* All rights not expressly granted are reserved.
-*
-* This Source Code Form is subject to the terms of the Mozilla Public
-* License, v. 2.0. If a copy of the MPL was not distributed with this file,
-* You can obtain one at http://mozilla.org/MPL/2.0/.
-*
-* Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
-* =======================================================================
-*/
+ * Copyright (c) 2014 Digi International Inc.,
+ * All rights not expressly granted are reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this file,
+ * You can obtain one at http://mozilla.org/MPL/2.0/.
+ *
+ * Digi International Inc. 11001 Bren Road East, Minnetonka, MN 55343
+ * =======================================================================
+ */
 package com.digi.xbee.api.connection.serial;
 
 import gnu.io.CommPortIdentifier;
@@ -43,6 +43,8 @@ import com.digi.xbee.api.exceptions.PermissionDeniedException;
 public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEventListener, CommPortOwnershipListener {
 	
 	// Variables.
+	private final Object lock = new Object();
+	
 	private RXTXPort serialPort;
 	
 	private InputStream inputStream;
@@ -210,17 +212,17 @@ public class SerialPortRxTx extends AbstractSerialPort implements SerialPortEven
 		} catch (IOException e) {
 			logger.error(e.getMessage(), e);
 		}
-		if (serialPort != null) {
-			try {
-				serialPort.notifyOnDataAvailable(false);
-				serialPort.removeEventListener();
-				portIdentifier.removePortOwnershipListener(this);
-				synchronized (serialPort) {
+		synchronized (lock) {
+			if (serialPort != null) {
+				try {
+					serialPort.notifyOnDataAvailable(false);
+					serialPort.removeEventListener();
+					portIdentifier.removePortOwnershipListener(this);
 					serialPort.close();
 					serialPort = null;
 					connectionOpen = false;
-				}
-			} catch (Exception e) { }
+				} catch (Exception e) { }
+			}
 		}
 	}
 	
