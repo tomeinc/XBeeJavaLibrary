@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -58,5 +58,15 @@ public class IOValuesTest {
 	@Test
 	public void testNullIOValueIsRetrievedWithInvalidID() {
 		assertNull(IOValue.getIOValue(INVALID_ID));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.io.IOValue#toString()}.
+	 */
+	@Test
+	public void testToString() {
+		for (IOValue ioValue:ioValues)
+			assertEquals("toString() method does not produce the expected output",
+					ioValue.getName(), ioValue.toString());
 	}
 }

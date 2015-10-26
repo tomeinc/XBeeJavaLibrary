@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -43,7 +43,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	// Variables.
 	private final XBee64BitAddress sourceAddress64;
 	
-	private final IOSample ioSample;
+	private IOSample ioSample;
 	
 	private final int rssi;
 	private final int receiveOptions;
@@ -66,8 +66,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	 *                                  if {@code rssi < 0} or
 	 *                                  if {@code rssi > 100} or
 	 *                                  if {@code receiveOptions < 0} or
-	 *                                  if {@code receiveOptions > 255} or 
-	 *                                  if {@code rfData.length < 5}.
+	 *                                  if {@code receiveOptions > 255}.
 	 * @throws NullPointerException if {@code payload == null}.
 	 */
 	public static RX64IOPacket createPacket(byte[] payload) {
@@ -116,8 +115,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	 * @throws IllegalArgumentException if {@code rssi < 0} or
 	 *                                  if {@code rssi > 100} or
 	 *                                  if {@code receiveOptions < 0} or
-	 *                                  if {@code receiveOptions > 255} or 
-	 *                                  if {@code rfData.length < 5}.
+	 *                                  if {@code receiveOptions > 255}.
 	 * @throws NullPointerException if {@code sourceAddress64 == null}.
 	 * 
 	 * @see com.digi.xbee.api.models.XBeeReceiveOptions
@@ -137,7 +135,7 @@ public class RX64IOPacket extends XBeeAPIPacket {
 		this.rssi = rssi;
 		this.receiveOptions = receiveOptions;
 		this.rfData = rfData;
-		if (rfData != null)
+		if (rfData != null && rfData.length >= 5)
 			ioSample = new IOSample(rfData);
 		else
 			ioSample = null;
@@ -231,7 +229,16 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	 * @param rfData Received RF data.
 	 */
 	public void setRFData(byte[] rfData){
-		this.rfData = rfData;
+		if (rfData == null)
+			this.rfData = null;
+		else
+			this.rfData = Arrays.copyOf(rfData, rfData.length);
+		
+		// Modify the ioSample accordingly.
+		if (rfData != null && rfData.length >= 5)
+			ioSample = new IOSample(this.rfData);
+		else
+			ioSample = null;
 	}
 	
 	/**
@@ -240,7 +247,9 @@ public class RX64IOPacket extends XBeeAPIPacket {
 	 * @return Received RF data.
 	 */
 	public byte[] getRFData(){
-		return rfData;
+		if (rfData == null)
+			return null;
+		return Arrays.copyOf(rfData, rfData.length);
 	}
 	
 	/*

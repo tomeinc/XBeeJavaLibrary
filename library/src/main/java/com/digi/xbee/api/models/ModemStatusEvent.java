@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -12,8 +12,6 @@
 package com.digi.xbee.api.models;
 
 import java.util.HashMap;
-
-import com.digi.xbee.api.utils.HexUtils;
 
 /**
  * Enumerates the different modem status events. This enumeration list is 
@@ -106,6 +104,6 @@ public enum ModemStatusEvent {
 	 */
 	@Override
 	public String toString() {
-		return HexUtils.byteToHexString((byte)id) + ": " + description;
+		return String.format("0x%02X: %s", id, description);
 	}
 }

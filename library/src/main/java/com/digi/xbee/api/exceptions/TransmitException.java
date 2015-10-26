@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -24,7 +24,7 @@ public class TransmitException extends CommunicationException {
 
 	// Constants.
 	private static final long serialVersionUID = 1L;
-	private static final String DEFAULT_MESSAGE = "There was a problem transmiting the XBee API packet.";
+	private static final String DEFAULT_MESSAGE = "There was a problem transmitting the XBee API packet.";
 	
 	// Variables.
 	private final XBeeTransmitStatus transmitStatus;
@@ -103,8 +103,17 @@ public class TransmitException extends CommunicationException {
 	 */
 	@Override
 	public String getMessage() {
-		if (transmitStatus != null)
-			return super.getMessage() + " > " + transmitStatus.getDescription();
-		return super.getMessage();
+		String message = super.getMessage();
+		
+		if (message == null)
+			message = "";
+		
+		if (transmitStatus != null) {
+			if (message.length() > 0)
+				message = message + " > ";
+			message = message + transmitStatus.toString();
+		}
+		
+		return message;
 	}
 }

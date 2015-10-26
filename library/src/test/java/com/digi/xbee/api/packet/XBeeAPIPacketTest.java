@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -174,6 +174,29 @@ public class XBeeAPIPacketTest {
 	/**
 	 * Test method for {@link com.digi.xbee.api.packet.XBeeAPIPacket#XBeeAPIPacket(int)}.
 	 * 
+	 * <p>Construct a new XBee API packet with a non-supported frame type.</p>
+	 */
+	@Test
+	public final void testCreateXBeeAPIPacketNotSupportedFrameType() {
+		// Setup the resources for the test.
+		int frameTypeValue = 0xFE;
+		
+		int expectedLength = 1 /* Frame type */;
+		
+		// Call the method under test.
+		TestXBeeAPIPacket packet = new TestXBeeAPIPacket(frameTypeValue);
+		
+		// Verify the result.
+		assertThat("Returned length is not the expected one", packet.getPacketLength(), is(equalTo(expectedLength)));
+		assertThat("Returned frame type is not the expected one", packet.getFrameType(), is(equalTo(APIFrameType.UNKNOWN)));
+		assertThat("Returned frame type value is not the expected one", packet.getFrameTypeValue(), is(equalTo(frameTypeValue)));
+		assertThat("Returned frame type value is not the expected one", packet.getFrameID(), is(equalTo(XBeeAPIPacket.NO_FRAME_ID)));
+	}
+	
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeeAPIPacket#XBeeAPIPacket(int)}.
+	 * 
 	 * <p>Construct a new XBee API packet with a valid api frame type.</p>
 	 */
 	@Test
@@ -192,6 +215,30 @@ public class XBeeAPIPacketTest {
 		assertThat("Returned frame type is not the expected one", packet.getFrameType(), is(equalTo(frameType)));
 		assertThat("Returned frame type value is not the expected one", packet.getFrameTypeValue(), is(equalTo(frameTypeValue)));
 		assertThat("Returned frame type value is not the expected one", packet.getFrameID(), is(equalTo(XBeeAPIPacket.NO_FRAME_ID)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeeAPIPacket#getPacketData()}.
+	 * 
+	 * <p>Test the get packet data method with null API frame data.</p>
+	 */
+	@Test
+	public final void testGetPacketDataGetAPIDataNull() {
+		// Setup the resources for the test.
+		APIFrameType frameType = APIFrameType.GENERIC;
+		TestXBeeAPIPacket packet = new TestXBeeAPIPacket(frameType) {
+			@Override
+			public byte[] getAPIData() {
+				return null;
+			}
+		};
+		byte[] expectedData = new byte[]{(byte)frameType.getValue()};
+		
+		// Call the method under test.
+		byte[] data = packet.getPacketData();
+		
+		// Verify the result.
+		assertThat("Returned packet data is not the expected one", data, is(equalTo(expectedData)));
 	}
 	
 	/**
@@ -491,6 +538,53 @@ public class XBeeAPIPacketTest {
 		
 		// Verify the result.
 		assertThat(false, is(equalTo(equal)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeeAPIPacket#getPacketParameters()}.
+	 * 
+	 * <p>Test the get Packet parameters without extra data.</p>
+	 */
+	@Test
+	public final void testGetPacketParametersFrameTypeNotSupported() {
+		// Setup the resources for the test.
+		int frameType = 153; //0x99;
+		TestXBeeAPIPacket packet = new TestXBeeAPIPacket(frameType);
+		
+		String expectedFrameType = HexUtils.integerToHexString(frameType, 1) + " (" + APIFrameType.UNKNOWN.getName() + ")";
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(1)));
+		assertThat("Frame type is not the expected one", packetParams.get("Frame type"), is(equalTo(expectedFrameType)));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.packet.XBeeAPIPacket#getPacketParameters()}.
+	 * 
+	 * <p>Test the get Packet parameters without extra data.</p>
+	 */
+	@Test
+	public final void testGetPacketParametersFrameTypeNull() {
+		// Setup the resources for the test.
+		int frameType = 153; //0x99;
+		TestXBeeAPIPacket packet = new TestXBeeAPIPacket(frameType){
+			@Override
+			public APIFrameType getFrameType() {
+				return null;
+			}
+		};
+		
+		String expectedFrameType = HexUtils.integerToHexString(frameType, 1);
+		
+		// Call the method under test.
+		LinkedHashMap<String, String> packetParams = packet.getPacketParameters();
+		
+		// Verify the result.
+		assertThat("Packet parameters map size is not the expected one", packetParams.size(), is(equalTo(1)));
+		assertThat("Frame type is not the expected one", packetParams.get("Frame type"), is(equalTo(expectedFrameType)));
 	}
 	
 	/**

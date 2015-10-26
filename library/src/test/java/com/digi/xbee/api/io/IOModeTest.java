@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -69,5 +69,15 @@ public class IOModeTest {
 	@Test
 	public void testNullIOModeIsRetrievedWithInvalidID() {
 		assertNull(IOMode.getIOMode(INVALID_ID));
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.io.IOMode#toString()}.
+	 */
+	@Test
+	public void testToString() {
+		for (IOMode ioMode:ioModes)
+			assertEquals("toString() method does not produce the expected output",
+					ioMode.getName(), ioMode.toString());
 	}
 }

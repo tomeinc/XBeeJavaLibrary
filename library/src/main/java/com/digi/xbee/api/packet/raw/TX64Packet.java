@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -197,7 +197,10 @@ public class TX64Packet extends XBeeAPIPacket {
 	 * @param rfData RF Data to send.
 	 */
 	public void setRFData(byte[] rfData) {
-		this.rfData = rfData;
+		if (rfData == null)
+			this.rfData = null;
+		else
+			this.rfData = Arrays.copyOf(rfData, rfData.length);
 	}
 	
 	/**
@@ -206,7 +209,9 @@ public class TX64Packet extends XBeeAPIPacket {
 	 * @return RF data to send.
 	 */
 	public byte[] getRFData() {
-		return rfData;
+		if (rfData == null)
+			return null;
+		return Arrays.copyOf(rfData, rfData.length);
 	}
 	
 	/*

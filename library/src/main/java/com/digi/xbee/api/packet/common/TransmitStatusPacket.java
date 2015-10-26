@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -239,9 +239,15 @@ public class TransmitStatusPacket extends XBeeAPIPacket {
 	public LinkedHashMap<String, String> getAPIPacketParameters() {
 		LinkedHashMap<String, String> parameters = new LinkedHashMap<String, String>();
 		parameters.put("16-bit dest. address", HexUtils.prettyHexString(destAddress16.toString()));
-		parameters.put("Tx. retry count", HexUtils.prettyHexString(HexUtils.integerToHexString(tranmistRetryCount, 1)) + " (" + tranmistRetryCount + ")");
-		parameters.put("Delivery status", HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getId(), 1)) + " (" + transmitStatus.getDescription() + ")");
-		parameters.put("Discovery status", HexUtils.prettyHexString(HexUtils.integerToHexString(discoveryStatus.getId(), 1)) + " (" + discoveryStatus.getDescription() + ")");
+		parameters.put("Tx. retry count", 
+				HexUtils.prettyHexString(HexUtils.integerToHexString(tranmistRetryCount, 1)) 
+				+ " (" + tranmistRetryCount + ")");
+		parameters.put("Delivery status", 
+				HexUtils.prettyHexString(HexUtils.integerToHexString(transmitStatus.getId(), 1)) 
+				+ " (" + transmitStatus.getDescription() + ")");
+		parameters.put("Discovery status", 
+				HexUtils.prettyHexString(HexUtils.integerToHexString(discoveryStatus.getId(), 1)) 
+				+ " (" + discoveryStatus.getDescription() + ")");
 		return parameters;
 	}
 }

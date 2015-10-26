@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -190,8 +190,14 @@ public enum XBeeProtocol {
 		else if (hardwareVersion.getValue() == HardwareVersionEnum.XB900HP_NZ.getValue()) {
 			return DIGI_POINT;
 		}
-		// If the hardware is not in the list, lets return Generic, at least 
-		// the configuration can be done and the console open.
+		else if (hardwareVersion.getValue() == HardwareVersionEnum.XBP24C_TH_DIP.getValue()
+				|| hardwareVersion.getValue() == HardwareVersionEnum.XB24C_TH_DIP.getValue()
+				|| hardwareVersion.getValue() == HardwareVersionEnum.XBP24C_S2C_SMT.getValue()) {
+			if (firmwareVersion.length() == 4 && firmwareVersion.startsWith("5"))
+				return SMART_ENERGY;
+			return ZIGBEE;
+		}
+		// If the hardware is not in the list, lets return Unknown.
 		else if (HardwareVersionEnum.get(hardwareVersion.getValue()) == null) {
 			return UNKNOWN;
 		}

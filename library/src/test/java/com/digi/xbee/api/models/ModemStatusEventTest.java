@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -15,8 +15,6 @@ import static org.junit.Assert.*;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import com.digi.xbee.api.utils.HexUtils;
 
 public class ModemStatusEventTest {
 
@@ -88,6 +86,6 @@ public class ModemStatusEventTest {
 	@Test
 	public void testModemStatusEventToString() {
 		for (ModemStatusEvent modemStatusEvent:modemStatusEventValues)
-			assertEquals(HexUtils.byteToHexString((byte)modemStatusEvent.getId()) + ": " + modemStatusEvent.getDescription(), modemStatusEvent.toString());
+			assertEquals(String.format("0x%02X: %s", modemStatusEvent.getId(), modemStatusEvent.getDescription()), modemStatusEvent.toString());
 	}
 }

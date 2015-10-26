@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -105,8 +105,17 @@ public class ATCommandException extends CommunicationException {
 	 */
 	@Override
 	public String getMessage() {
-		if (atCommandStatus != null)
-			return super.getMessage() + " > " + atCommandStatus.getDescription();
-		return super.getMessage();
+		String message = super.getMessage();
+		
+		if (message == null)
+			message = "";
+		
+		if (atCommandStatus != null) {
+			if (message.length() > 0)
+				message = message + " > ";
+			message = message + atCommandStatus.getDescription();
+		}
+		
+		return message;
 	}
 }

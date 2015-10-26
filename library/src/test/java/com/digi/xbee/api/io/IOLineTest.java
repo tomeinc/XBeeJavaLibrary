@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -83,5 +83,15 @@ public class IOLineTest {
 				assertNull(ioLine.getPWMDutyCycleATCommand());
 			}
 		}
+	}
+	
+	/**
+	 * Test method for {@link com.digi.xbee.api.io.IOLine#toString()}.
+	 */
+	@Test
+	public void testToString() {
+		for (IOLine ioLine: ioLines)
+			assertEquals("toString() method does not produce the expected output",
+					ioLine.getName(), ioLine.toString());
 	}
 }

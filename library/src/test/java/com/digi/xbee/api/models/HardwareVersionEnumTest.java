@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -72,7 +72,7 @@ public class HardwareVersionEnumTest {
 	 * <p>Verify that each HardwareVersionEnum entry can be retrieved statically using its ID.</p>
 	 */
 	@Test
-	public void testXBeeProtocolStaticAccess() {
+	public void testHardwareVersionEnumStaticAccess() {
 		for (HardwareVersionEnum hardwareVersionEnum:hardwareVersionValues)
 			assertEquals(hardwareVersionEnum, HardwareVersionEnum.get(hardwareVersionEnum.getValue()));
 	}

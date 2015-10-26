@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2014 Digi International Inc.,
+ * Copyright (c) 2014-2015 Digi International Inc.,
  * All rights not expressly granted are reserved.
  *
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -480,7 +480,7 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
 		
 		// Verify the result.
-		assertThat("The discovered devices list should not be empty", remotes.size(), is(equalTo(ndAnswers.size())));
+		assertThat("The discovered devices list must have a size of " + ndAnswers.size(), remotes.size(), is(equalTo(ndAnswers.size())));
 		assertThat("The Node ID of the discovered device should be '" + id + "'", remotes.get(0).getNodeID(), is(equalTo(id)));
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
@@ -528,7 +528,7 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
 		
 		// Verify the result.
-		assertThat("The discovered devices list should not be empty", remotes.size(), is(equalTo(ndAnswers.size())));
+		assertThat("The discovered devices list must have a size of " + ndAnswers.size(), remotes.size(), is(equalTo(ndAnswers.size())));
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
@@ -576,7 +576,7 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
 		
 		// Verify the result.
-		assertThat("The discovered devices list should not be empty", remotes.size(), is(equalTo(ndAnswers.size())));
+		assertThat("The discovered devices list must have a size of " + ndAnswers.size(), remotes.size(), is(equalTo(ndAnswers.size())));
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
 		Mockito.verify(deviceMock, Mockito.times(1)).addPacketListener(packetListener);
@@ -615,7 +615,7 @@ public class NodeDiscoveryDiscoverDevicesBlockTest {
 		List<RemoteXBeeDevice> remotes = nd.discoverDevices(list);
 		
 		// Verify the result.
-		assertThat("The discovered devices list should not be empty", remotes.size(), is(equalTo(ndAnswers.size())));
+		assertThat("The discovered devices list must have a size of " + ndAnswers.size(), remotes.size(), is(equalTo(ndAnswers.size())));
 		assertThat("The Node ID of the discovered device should be '" + id + "'", remotes.get(0).getNodeID(), is(equalTo(id)));
 		
 		PowerMockito.verifyPrivate(nd, Mockito.times(1)).invoke(SEND_NODE_DISCOVERY_COMMAND_METHOD, Mockito.anyString());
