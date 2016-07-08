@@ -118,7 +118,7 @@ public enum XBeeProtocol {
 		case XT09B_XXX:
 			if ((firmwareVersion.length() == 4 && firmwareVersion.startsWith("8"))
 					|| (firmwareVersion.length() == 5 && firmwareVersion.charAt(1) == '8'))
-				return XTEND_DM;
+				return DIGI_MESH; // XTEND_DM;
 			return XTEND;
 		case XB24_AXX_XX:
 		case XBP24_AXX_XX:
@@ -206,7 +206,7 @@ public enum XBeeProtocol {
 			if (firmwareVersion.startsWith("2"))
 				return XTEND;
 			else if (firmwareVersion.startsWith("8"))
-				return XTEND_DM;
+				return DIGI_MESH; // XTEND_DM;
 			else
 				return SX;
 		case S2D_SMT_PRO:
