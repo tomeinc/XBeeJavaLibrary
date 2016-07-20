@@ -208,7 +208,7 @@ public enum XBeeProtocol {
 			else if (firmwareVersion.startsWith("8"))
 				return DIGI_MESH; // XTEND_DM;
 			else
-				return SX;
+				return DIGI_MESH; // SX;
 		case S2D_SMT_PRO:
 		case S2D_SMT_REG:
 		case S2D_TH_PRO:
